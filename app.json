@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "Last Price",
+    "slug": "last-price",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/bill_128.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/bill_128.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app needs camera access to scan receipts",
+        "NSPhotoLibraryUsageDescription": "This app needs photo library access to select receipt images"
+      },
+      "bundleIdentifier": "com.miguez.lastprice"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/bill_128.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.miguez.lastprice"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to scan receipts."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to select receipt images."
+        }
+      ]
+    ]
+  }
+}
