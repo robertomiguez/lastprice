@@ -51,6 +51,11 @@
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to select receipt images."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "dbd4b906-0d6c-498e-9d8b-1dcfd1bc74fd"
+      }
+    }
   }
 }
