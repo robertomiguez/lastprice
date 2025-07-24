@@ -71,9 +71,9 @@ export default function App() {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
+      mediaTypes: ['images'],
       allowsEditing: true,
-      aspect: [3, 4],
+      aspect: [4, 1],
       quality: 0.8,
     });
 
