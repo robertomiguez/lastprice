@@ -118,7 +118,7 @@ export const ReceiptEditor: React.FC<ReceiptEditorProps> = ({
         <Text style={styles.totalText}>
           💰 Calculated Total: ${calculateTotal().toFixed(2)}
         </Text>
-        {receiptData.total && (
+        {typeof receiptData.total === 'number' && !isNaN(receiptData.total) && (
           <Text style={styles.extractedTotal}>
             🤖 Extracted Total: ${receiptData.total.toFixed(2)}
           </Text>

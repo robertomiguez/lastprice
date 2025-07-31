@@ -9,9 +9,10 @@ import { ReceiptImage } from '../../components/ReceiptImage';
 import { ReceiptEditor } from '../../components/ReceiptEditor';
 import { SavedReceipts } from '../../components/SavedReceipts';
 import { runOCR } from '../../services/ocrService';
-import { parseReceiptText } from '../../services/receiptParser';
 import { saveReceipt, loadSavedReceipts } from '../../services/storageService';
 import { ReceiptData } from '../../types/receipt';
+import { formatForLLM } from '../../utils/receiptUtils';
+
 
 export default function App() {
   const [imageUri, setImageUri] = useState<string | null>(null);
@@ -87,16 +88,50 @@ export default function App() {
   const processReceipt = async (uri: string) => {
     setLoading(true);
     try {
-      const result = await runOCR(uri);
-      const parsedData = parseReceiptText(result.text);
-      setReceiptData(parsedData);
+      const result = await runOCR(uri); // result.text is raw OCR output
+      const formattedText = formatForLLM(result.text); // Apply preprocessing and line formatting
+
+      // Send to your Cloudflare Worker (or wherever your LLM lives)
+      const response = await fetch("https://lastprice-llm.nonelabs.workers.dev", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer YOUR_KEY_HERE", // optional
+        },
+        body: JSON.stringify({ prompt: formattedText }),
+      });
+
+      const parsedData = await response.json(); // Expected to be [{item: "...", price: 0.99}]
+
+      if (!Array.isArray(parsedData)) {
+        Alert.alert('Parsing failed', 'Could not understand the receipt.');
+        console.log("Raw output:", parsedData.raw || parsedData);
+        return;
+      }
+
+      const newReceipt: ReceiptData = {
+        id: Date.now(),
+        store: '', // Preencha se tiver OCR do nome do local
+        date: '',  // Preencha se tiver OCR da data
+        items: parsedData.map((item, index) => ({
+          id: index + 1,
+          name: item.name || '',
+          price: typeof item.price === 'number' ? item.price : 0,
+        })),
+        total: parsedData.reduce((sum, item) => sum + (item.price || 0), 0),
+        timestamp: new Date().toISOString(),
+      };
+
+      setReceiptData(newReceipt);
       setEditMode(true);
     } catch (error) {
+      console.error(error);
       Alert.alert('Error', 'Failed to process receipt. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+
 
   // Save receipt handler
   const handleSaveReceipt = async () => {
